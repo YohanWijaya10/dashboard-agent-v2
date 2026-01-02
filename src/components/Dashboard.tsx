@@ -9,7 +9,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import MetricCard from './MetricCard';
-import InventoryValueChart from './Charts/InventoryValue';
+import InventoryValueChart from './Charts/InventoryValueEChart';
 import StockMovementChart from './Charts/StockMovement';
 import TopProductsChart from './Charts/TopProducts';
 import WarehouseDistributionChart from './Charts/WarehouseDistribution';
