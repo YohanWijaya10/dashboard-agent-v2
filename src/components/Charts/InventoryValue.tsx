@@ -40,22 +40,35 @@ const InventoryValueChart: React.FC<InventoryValueChartProps> = ({ data, loading
               data={data}
               cx="50%"
               cy="50%"
-              labelLine={false}
-              label={(entry) => `${entry.category}: ${entry.percentage.toFixed(1)}%`}
+              innerRadius={50}
               outerRadius={80}
-              fill="#8884d8"
+              paddingAngle={2}
+              minAngle={5}
+              labelLine={false}
+              label={(entry: any) => (entry.percentage >= 5 ? `${entry.percentage.toFixed(1)}%` : '')}
               dataKey="value"
             >
               {data.map((_entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
-            <Tooltip
-              formatter={(value: number) => formatValue(value)}
-            />
-            <Legend formatter={(_value, entry: any) => entry.payload.category} />
+            <Tooltip formatter={(value: number) => formatValue(value)} />
           </PieChart>
         </ResponsiveContainer>
+      </div>
+      {/* Custom legend with values for readability */}
+      <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2">
+        {data.map((item, index) => (
+          <div key={item.category} className="flex items-center space-x-2 text-sm">
+            <span
+              className="inline-block w-3 h-3 rounded-sm"
+              style={{ backgroundColor: COLORS[index % COLORS.length] }}
+            />
+            <span className="truncate">
+              {item.category}: {item.percentage.toFixed(1)}%
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );
