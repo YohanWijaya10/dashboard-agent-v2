@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { WarehouseDistributionData } from '../../types';
 
@@ -6,6 +6,8 @@ interface WarehouseDistributionChartProps {
   data: WarehouseDistributionData[];
   loading?: boolean;
 }
+
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316', '#84cc16'];
 
 const WarehouseDistributionChart: React.FC<WarehouseDistributionChartProps> = ({ data, loading }) => {
   if (loading) {
@@ -24,6 +26,17 @@ const WarehouseDistributionChart: React.FC<WarehouseDistributionChartProps> = ({
     );
   }
 
+  // Determine dynamic category keys from data (exclude 'warehouseName')
+  const categoryKeys = useMemo(() => {
+    const keys = new Set<string>();
+    data.forEach((row) => {
+      Object.keys(row).forEach((k) => {
+        if (k !== 'warehouseName') keys.add(k);
+      });
+    });
+    return Array.from(keys);
+  }, [data]);
+
   return (
     <div className="card">
       <h3 className="text-lg font-semibold mb-4">Warehouse Stock Distribution by Category</h3>
@@ -38,10 +51,9 @@ const WarehouseDistributionChart: React.FC<WarehouseDistributionChartProps> = ({
               labelFormatter={(label) => `Warehouse: ${label}`}
             />
             <Legend />
-            <Bar dataKey="Raw Material" stackId="a" fill="#3b82f6" />
-            <Bar dataKey="Additive" stackId="a" fill="#10b981" />
-            <Bar dataKey="Packaging" stackId="a" fill="#f59e0b" />
-            <Bar dataKey="Finished Goods" stackId="a" fill="#ef4444" />
+            {categoryKeys.map((key, idx) => (
+              <Bar key={key} dataKey={key} stackId="a" fill={COLORS[idx % COLORS.length]} />
+            ))}
           </BarChart>
         </ResponsiveContainer>
       </div>
