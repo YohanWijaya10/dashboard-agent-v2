@@ -1,5 +1,5 @@
-import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import React, { useMemo } from 'react';
+import ReactECharts from 'echarts-for-react';
 import { StockHealthData } from '../../types';
 import { AlertTriangle, AlertCircle, CheckCircle } from 'lucide-react';
 
@@ -37,30 +37,53 @@ const StockHealthChart: React.FC<StockHealthChartProps> = ({ data, loading }) =>
     );
   }
 
+  const option = useMemo(() => {
+    return {
+      color: [COLORS['Critical'], COLORS['Warning'], COLORS['OK']],
+      tooltip: {
+        trigger: 'item',
+        formatter: (params: any) => {
+          const count = Number(params.value) || 0;
+          const percent = params.percent ?? 0;
+          return `${params.name}<br/>${count} (${percent.toFixed(1)}%)`;
+        }
+      },
+      legend: {
+        bottom: 0,
+        data: data.map(d => d.status)
+      },
+      series: [
+        {
+          type: 'pie',
+          radius: ['50%', '80%'],
+          center: ['50%', '45%'],
+          minAngle: 5,
+          avoidLabelOverlap: true,
+          label: {
+            show: true,
+            formatter: (p: any) => (p.percent >= 8 ? `${p.percent.toFixed(0)}%` : ''),
+          },
+          labelLine: {
+            show: true,
+            length: 8,
+            length2: 6
+          },
+          emphasis: {
+            scale: true,
+            focus: 'self'
+          },
+          data: data.map(d => ({ name: d.status, value: d.count }))
+        }
+      ]
+    } as any;
+  }, [data]);
+
   return (
     <div className="card">
       <h3 className="text-lg font-semibold mb-4">Stock Health Status</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="h-56 md:h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={80}
-                fill="#8884d8"
-                paddingAngle={5}
-                dataKey="count"
-              >
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[entry.status]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+          <ReactECharts option={option} style={{ height: '100%', width: '100%' }} />
         </div>
         <div className="flex flex-col justify-center space-y-3">
           {data.map((item) => (
