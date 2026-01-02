@@ -16,8 +16,11 @@ import WarehouseDistributionChart from './Charts/WarehouseDistribution';
 import StockHealthChart from './Charts/StockHealth';
 import UpcomingPOs from './Charts/UpcomingPOs';
 import { useInventoryData } from '../hooks/useInventoryData';
+import SummaryPanel from './SummaryPanel';
+import { useSummary } from '../hooks/useSummary';
 
 const Dashboard: React.FC = () => {
+  const summary = useSummary(true);
   const {
     metrics,
     inventoryValue,
@@ -83,6 +86,14 @@ const Dashboard: React.FC = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Executive Summary Hero Section */}
+        <SummaryPanel
+          summary={summary.summary}
+          loading={summary.loading}
+          error={summary.error}
+          onRefresh={summary.refresh}
+        />
+
         {/* Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
           <MetricCard

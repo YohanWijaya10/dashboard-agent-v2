@@ -63,3 +63,8 @@ export interface ChatResponse {
   suggestions?: string[];
   data?: any;
 }
+
+export interface ExecutiveSummaryResponse {
+  summary: string;
+  generatedAt: string;
+}

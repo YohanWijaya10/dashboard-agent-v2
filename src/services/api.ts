@@ -61,6 +61,13 @@ class ApiService {
     const response = await this.client.get<UpcomingPOData[]>('/api/dashboard/upcoming-po');
     return response.data;
   }
+
+  async getExecutiveSummary(): Promise<{ summary: string; generatedAt: string }> {
+    const response = await this.client.get<{ summary: string; generatedAt: string }>(
+      '/api/dashboard/executive-summary'
+    );
+    return response.data;
+  }
 }
 
 export default new ApiService();
