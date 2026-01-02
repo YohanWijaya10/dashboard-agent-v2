@@ -31,8 +31,11 @@ const WarehouseDistributionChart: React.FC<WarehouseDistributionChartProps> = ({
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="warehouseName" />
-          <YAxis />
-          <Tooltip />
+          <YAxis tickFormatter={(value) => Number(value).toLocaleString('id-ID')} />
+          <Tooltip
+            formatter={(value: number) => Number(value).toLocaleString('id-ID', { maximumFractionDigits: 2 })}
+            labelFormatter={(label) => `Warehouse: ${label}`}
+          />
           <Legend />
           <Bar dataKey="Raw Material" stackId="a" fill="#3b82f6" />
           <Bar dataKey="Additive" stackId="a" fill="#10b981" />
