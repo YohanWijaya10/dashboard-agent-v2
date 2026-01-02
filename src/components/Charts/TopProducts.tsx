@@ -31,25 +31,27 @@ const TopProductsChart: React.FC<TopProductsChartProps> = ({ data, loading }) =>
   return (
     <div className="card">
       <h3 className="text-lg font-semibold mb-4">Top 10 Products by Value</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data} layout="horizontal">
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="productName"
-            angle={-45}
-            textAnchor="end"
-            height={100}
-            tick={{ fontSize: 12 }}
-          />
-          <YAxis tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`} />
-          <Tooltip
-            formatter={(value: number) => formatValue(value)}
-            labelStyle={{ color: '#000' }}
-          />
-          <Legend />
-          <Bar dataKey="value" fill="#3b82f6" name="Value (IDR)" />
-        </BarChart>
-      </ResponsiveContainer>
+      <div className="h-64 md:h-80">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} layout="horizontal">
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="productName"
+              angle={-30}
+              textAnchor="end"
+              height={70}
+              tick={{ fontSize: 10 }}
+            />
+            <YAxis tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`} />
+            <Tooltip
+              formatter={(value: number) => formatValue(value)}
+              labelStyle={{ color: '#000' }}
+            />
+            <Legend />
+            <Bar dataKey="value" fill="#3b82f6" name="Value (IDR)" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };

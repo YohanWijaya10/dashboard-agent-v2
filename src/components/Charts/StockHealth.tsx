@@ -40,26 +40,28 @@ const StockHealthChart: React.FC<StockHealthChartProps> = ({ data, loading }) =>
   return (
     <div className="card">
       <h3 className="text-lg font-semibold mb-4">Stock Health Status</h3>
-      <div className="grid grid-cols-2 gap-4">
-        <ResponsiveContainer width="100%" height={250}>
-          <PieChart>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              innerRadius={60}
-              outerRadius={80}
-              fill="#8884d8"
-              paddingAngle={5}
-              dataKey="count"
-            >
-              {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[entry.status]} />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="h-56 md:h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={80}
+                fill="#8884d8"
+                paddingAngle={5}
+                dataKey="count"
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[entry.status]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
         <div className="flex flex-col justify-center space-y-3">
           {data.map((item) => (
             <div key={item.status} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">

@@ -27,22 +27,24 @@ const WarehouseDistributionChart: React.FC<WarehouseDistributionChartProps> = ({
   return (
     <div className="card">
       <h3 className="text-lg font-semibold mb-4">Warehouse Stock Distribution by Category</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="warehouseName" />
-          <YAxis tickFormatter={(value) => Number(value).toLocaleString('id-ID')} />
-          <Tooltip
-            formatter={(value: number) => Number(value).toLocaleString('id-ID', { maximumFractionDigits: 2 })}
-            labelFormatter={(label) => `Warehouse: ${label}`}
-          />
-          <Legend />
-          <Bar dataKey="Raw Material" stackId="a" fill="#3b82f6" />
-          <Bar dataKey="Additive" stackId="a" fill="#10b981" />
-          <Bar dataKey="Packaging" stackId="a" fill="#f59e0b" />
-          <Bar dataKey="Finished Goods" stackId="a" fill="#ef4444" />
-        </BarChart>
-      </ResponsiveContainer>
+      <div className="h-64 md:h-80">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="warehouseName" />
+            <YAxis tickFormatter={(value) => Number(value).toLocaleString('id-ID')} />
+            <Tooltip
+              formatter={(value: number) => Number(value).toLocaleString('id-ID', { maximumFractionDigits: 2 })}
+              labelFormatter={(label) => `Warehouse: ${label}`}
+            />
+            <Legend />
+            <Bar dataKey="Raw Material" stackId="a" fill="#3b82f6" />
+            <Bar dataKey="Additive" stackId="a" fill="#10b981" />
+            <Bar dataKey="Packaging" stackId="a" fill="#f59e0b" />
+            <Bar dataKey="Finished Goods" stackId="a" fill="#ef4444" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };

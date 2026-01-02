@@ -67,9 +67,9 @@ const ChatWidget: React.FC = () => {
 
       {/* Chat panel */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 w-96 h-[600px] bg-white rounded-lg shadow-2xl flex flex-col z-50 border border-gray-200">
+        <div className="fixed inset-0 md:inset-auto md:bottom-6 md:right-6 w-full h-full md:w-96 md:h-[600px] bg-white md:rounded-lg shadow-2xl flex flex-col z-50 border border-gray-200">
           {/* Header */}
-          <div className="bg-primary-600 text-white p-4 rounded-t-lg flex items-center justify-between">
+          <div className="bg-primary-600 text-white p-4 md:rounded-t-lg flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <MessageCircle className="w-5 h-5" />
               <h3 className="font-semibold">AI Assistant</h3>
@@ -157,7 +157,7 @@ const ChatWidget: React.FC = () => {
           )}
 
           {/* Input */}
-          <div className="p-4 border-t border-gray-200 bg-white rounded-b-lg">
+          <div className="p-4 border-t border-gray-200 bg-white md:rounded-b-lg">
             <div className="flex space-x-2">
               <input
                 ref={inputRef}
@@ -166,7 +166,7 @@ const ChatWidget: React.FC = () => {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Type your question..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
                 disabled={loading}
               />
               <button
