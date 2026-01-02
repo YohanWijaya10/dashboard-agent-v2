@@ -64,7 +64,8 @@ class ApiService {
 
   async getExecutiveSummary(): Promise<{ summary: string; generatedAt: string }> {
     const response = await this.client.get<{ summary: string; generatedAt: string }>(
-      '/api/dashboard/executive-summary'
+      '/api/dashboard/executive-summary',
+      { timeout: 90000 } // 90 seconds for AI generation
     );
     return response.data;
   }
