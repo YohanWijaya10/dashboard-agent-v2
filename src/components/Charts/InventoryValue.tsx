@@ -52,7 +52,7 @@ const InventoryValueChart: React.FC<InventoryValueChartProps> = ({ data, loading
           <Tooltip
             formatter={(value: number) => formatValue(value)}
           />
-          <Legend formatter={(value, entry: any) => entry.payload.category} />
+          <Legend formatter={(_value, entry: any) => entry.payload.category} />
         </PieChart>
       </ResponsiveContainer>
     </div>
