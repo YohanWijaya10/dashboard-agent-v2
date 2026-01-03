@@ -26,7 +26,7 @@ const StockMovementChart: React.FC<StockMovementChartProps> = ({ data, loading }
 
   return (
     <div className="card">
-      <h3 className="text-lg font-semibold mb-4">Stock Movement Trend (30 Days)</h3>
+      <h3 className="text-base font-semibold tracking-tight text-slate-900 mb-4">Stock Movement Trend (30 Days)</h3>
       <div className="h-64 md:h-80">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>

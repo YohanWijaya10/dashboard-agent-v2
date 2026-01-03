@@ -14,13 +14,13 @@ const ProductPerformanceAnalysis: React.FC = () => {
 
   if (error && !performance) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
-          <TrendingUp className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <TrendingUp className="w-16 h-16 text-rose-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900 mb-2">
             Error Loading Performance Data
           </h2>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <p className="text-slate-600 mb-4">{error}</p>
           <button onClick={refresh} className="btn-primary">
             Try Again
           </button>
@@ -178,12 +178,12 @@ const ProductPerformanceAnalysis: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <TrendingUp className="w-6 h-6 text-primary-600 mr-2" />
-          <h2 className="text-2xl font-bold text-gray-900">
+          <TrendingUp className="w-6 h-6 text-indigo-600 mr-2" />
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
             Product Performance Analysis
           </h2>
         </div>
-        <span className="text-sm text-gray-500">30-day analysis</span>
+        <span className="text-xs text-slate-500">30-day analysis</span>
       </div>
 
       {/* AI Insights Panel */}
@@ -199,14 +199,14 @@ const ProductPerformanceAnalysis: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Stars */}
         <div className="card">
-          <h3 className="text-lg font-semibold mb-2">Stars</h3>
-          <p className="text-sm text-gray-700 mb-2">
+          <h3 className="text-base font-semibold tracking-tight text-slate-900 mb-2">Stars</h3>
+          <p className="text-sm text-slate-700 mb-2">
             Produk penyumbang pendapatan besar dan stabil laku. Nilai per unit berada di atas biaya unit sehingga margin terjaga.
           </p>
-          <p className="text-sm text-gray-600 mb-3">
+          <p className="text-sm text-slate-600 mb-3">
             Contoh: {pickTopByRevenue(byCategory['Star'] || [], 3).map(p => `${p.productName} (${p.sku})`).join(', ') || '-'}
           </p>
-          <ul className="text-sm text-gray-700 list-disc list-inside">
+          <ul className="text-sm text-slate-700 list-disc list-inside">
             <li>Amankan suplai dan jaga service level.</li>
             <li>Pertahankan harga; uji varian/upsell.</li>
           </ul>
@@ -214,14 +214,14 @@ const ProductPerformanceAnalysis: React.FC = () => {
 
         {/* Cash Cows */}
         <div className="card">
-          <h3 className="text-lg font-semibold mb-2">Cash Cows</h3>
-          <p className="text-sm text-gray-700 mb-2">
+          <h3 className="text-base font-semibold tracking-tight text-slate-900 mb-2">Cash Cows</h3>
+          <p className="text-sm text-slate-700 mb-2">
             Pendapatan kuat dan stabil; cocok untuk optimasi margin/biaya sambil menjaga arus kas.
           </p>
-          <p className="text-sm text-gray-600 mb-3">
+          <p className="text-sm text-slate-600 mb-3">
             Contoh: {pickTopByRevenue(byCategory['Cash Cow'] || [], 3).map(p => `${p.productName} (${p.sku})`).join(', ') || '-'}
           </p>
-          <ul className="text-sm text-gray-700 list-disc list-inside">
+          <ul className="text-sm text-slate-700 list-disc list-inside">
             <li>Optimasi biaya dan efisiensi suplai.</li>
             <li>Alokasikan surplus untuk mendanai pertumbuhan.</li>
           </ul>
@@ -229,14 +229,14 @@ const ProductPerformanceAnalysis: React.FC = () => {
 
         {/* Question Marks */}
         <div className="card">
-          <h3 className="text-lg font-semibold mb-2">Question Marks</h3>
-          <p className="text-sm text-gray-700 mb-2">
+          <h3 className="text-base font-semibold tracking-tight text-slate-900 mb-2">Question Marks</h3>
+          <p className="text-sm text-slate-700 mb-2">
             Laku cepat, namun nilai per unit tipis (harga bersih relatif rendah atau biaya unit tinggi). Kandidat untuk dinaikkan nilainya.
           </p>
-          <p className="text-sm text-gray-600 mb-3">
+          <p className="text-sm text-slate-600 mb-3">
             Contoh: {pickQM.map(p => `${p.productName} (${p.sku})`).join(', ') || '-'}
           </p>
-          <ul className="text-sm text-gray-700 list-disc list-inside">
+          <ul className="text-sm text-slate-700 list-disc list-inside">
             <li>Uji kenaikan harga 5–10% atau bundling.</li>
             <li>Cross‑sell untuk menaikkan nilai per transaksi.</li>
           </ul>
@@ -244,14 +244,14 @@ const ProductPerformanceAnalysis: React.FC = () => {
 
         {/* Dogs (renamed for clarity) */}
         <div className="card">
-          <h3 className="text-lg font-semibold mb-2">Performa Rendah</h3>
-          <p className="text-sm text-gray-700 mb-2">
+          <h3 className="text-base font-semibold tracking-tight text-slate-900 mb-2">Performa Rendah</h3>
+          <p className="text-sm text-slate-700 mb-2">
             Permintaan rendah dan kontribusi kecil; berisiko menyerap modal/ruang tanpa imbal hasil memadai.
           </p>
-          <p className="text-sm text-gray-600 mb-3">
+          <p className="text-sm text-slate-600 mb-3">
             Contoh: {pickDogs.map(p => `${p.productName} (${p.sku})`).join(', ') || '-'}
           </p>
-          <ul className="text-sm text-gray-700 list-disc list-inside">
+          <ul className="text-sm text-slate-700 list-disc list-inside">
             <li>Audit harga/biaya/kompetitor untuk reposisi.</li>
             <li>Phase‑out bertahap bila tidak membaik.</li>
           </ul>
@@ -273,14 +273,14 @@ const ProductPerformanceAnalysis: React.FC = () => {
 
       {/* Chart A: Revenue Potential Ranking */}
       <div className="card">
-        <h3 className="text-lg font-semibold mb-4">💰 Produk Paling Menghasilkan (30 Hari)</h3>
+        <h3 className="text-base font-semibold tracking-tight text-slate-900 mb-4">💰 Produk Paling Menghasilkan (30 Hari)</h3>
         <div className="h-80 md:h-96">
           {loading ? (
-            <div className="h-full w-full flex items-center justify-center text-gray-400 animate-pulse">
+            <div className="h-full w-full flex items-center justify-center text-slate-400 animate-pulse">
               Loading chart...
             </div>
           ) : topRevenue.length === 0 ? (
-            <div className="h-full w-full flex items-center justify-center text-gray-400">
+            <div className="h-full w-full flex items-center justify-center text-slate-400">
               No data available
             </div>
           ) : (
@@ -290,21 +290,21 @@ const ProductPerformanceAnalysis: React.FC = () => {
       </div>
 
       {/* Helper Text */}
-      <ul className="text-sm text-gray-600 list-disc list-inside">
+      <ul className="text-xs text-slate-500 list-disc list-inside">
         <li>Cepat laku tapi revenue rendah → naikkan margin</li>
         <li>Revenue tinggi tapi jarang laku → promo/bundling</li>
       </ul>
 
       {/* Chart B: Velocity Ranking */}
       <div className="card">
-        <h3 className="text-lg font-semibold mb-4">⚡ Produk Paling Cepat Laku (30 Hari)</h3>
+        <h3 className="text-base font-semibold tracking-tight text-slate-900 mb-4">⚡ Produk Paling Cepat Laku (30 Hari)</h3>
         <div className="h-80 md:h-96">
           {loading ? (
-            <div className="h-full w-full flex items-center justify-center text-gray-400 animate-pulse">
+            <div className="h-full w-full flex items-center justify-center text-slate-400 animate-pulse">
               Loading chart...
             </div>
           ) : topVelocity.length === 0 ? (
-            <div className="h-full w-full flex items-center justify-center text-gray-400">
+            <div className="h-full w-full flex items-center justify-center text-slate-400">
               No data available
             </div>
           ) : (

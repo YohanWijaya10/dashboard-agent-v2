@@ -71,7 +71,7 @@ const InventoryValueEChart: React.FC<Props> = ({ data, loading }) => {
 
   return (
     <div className="card">
-      <h3 className="text-lg font-semibold mb-4">Inventory Value by Category</h3>
+      <h3 className="text-base font-semibold tracking-tight text-slate-900 mb-4">Inventory Value by Category</h3>
       <div className="h-64 md:h-80">
         <ReactECharts option={option} style={{ height: '100%', width: '100%' }} />
       </div>
@@ -80,4 +80,3 @@ const InventoryValueEChart: React.FC<Props> = ({ data, loading }) => {
 };
 
 export default InventoryValueEChart;
-

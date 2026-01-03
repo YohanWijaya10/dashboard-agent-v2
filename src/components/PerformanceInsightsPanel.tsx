@@ -63,31 +63,33 @@ const PerformanceInsightsPanel: React.FC<Props> = ({
   }, [productList]);
   return (
     <div className="card mb-8">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center">
-          <Sparkles className="w-5 h-5 text-purple-600 mr-2" />
-          <h3 className="text-lg font-semibold">AI Performance Insights</h3>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-indigo-600" />
+          <h3 className="text-base font-semibold tracking-tight text-slate-900">AI Performance Insights</h3>
+          <span className="ai-badge">AI Generated</span>
         </div>
         <button
           onClick={onRefresh}
           disabled={loading}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+          className="ai-icon-btn disabled:opacity-50"
           aria-label="Refresh insights"
         >
-          <RefreshCw className={`w-5 h-5 text-gray-600 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-5 h-5 text-slate-600 ${loading ? 'animate-spin' : ''}`} />
         </button>
       </div>
+      <div className="h-2 rounded-md bg-gradient-to-r from-indigo-500/10 to-blue-500/10 mb-4"></div>
 
       {loading && (
         <div className="flex items-center justify-center py-12">
-          <div className="animate-pulse text-gray-400">
+          <div className="animate-pulse text-slate-400">
             Generating AI insights...
           </div>
         </div>
       )}
 
       {error && !loading && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+        <div className="bg-rose-50 border border-rose-200 rounded-lg p-4 text-rose-700">
           <p className="font-medium mb-1">Failed to generate insights</p>
           <p className="text-sm">{error}</p>
         </div>
@@ -96,16 +98,16 @@ const PerformanceInsightsPanel: React.FC<Props> = ({
       {insights && !loading && !error && (
         <div className="space-y-3">
           <div>
-            <h4 className="text-sm font-semibold text-gray-900 mb-1">Insight Utama</h4>
-            <p className="text-gray-700 text-sm leading-relaxed">
+            <h4 className="text-sm font-semibold text-slate-900 mb-1">Insight Utama</h4>
+            <p className="text-slate-700 text-sm leading-relaxed">
               Portofolio masih bertumpu pada beberapa produk utama; sisanya kontribusinya lebih rendah.
               Peluang: dorong produk yang diminati agar menghasilkan lebih baik, dan kurangi risiko ketergantungan.
             </p>
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-gray-900 mb-1">Produk Unggulan</h4>
-            <p className="text-gray-700 text-sm leading-relaxed">
+            <h4 className="text-sm font-semibold text-slate-900 mb-1">Produk Unggulan</h4>
+            <p className="text-slate-700 text-sm leading-relaxed">
               {(() => {
                 const list = (topStrongProducts.length
                   ? topStrongProducts
@@ -130,8 +132,8 @@ const PerformanceInsightsPanel: React.FC<Props> = ({
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-gray-900 mb-1">Butuh Perbaikan</h4>
-            <p className="text-gray-700 text-sm leading-relaxed">
+            <h4 className="text-sm font-semibold text-slate-900 mb-1">Butuh Perbaikan</h4>
+            <p className="text-slate-700 text-sm leading-relaxed">
               {improvementProducts.length
                 ? `${improvementProducts.map(p => `${p.productName} (${p.sku})`).join(', ')} cepat terjual, namun nilai per unitnya tipis dibanding biaya; indikasi harga bersih terlalu rendah atau biaya unit tinggi. Fokus pada kenaikan margin melalui penyesuaian harga, bundling, atau cross‑sell.`
                 : 'Ada produk yang perputarannya baik namun nilainya belum optimal—nilai per unit cenderung tipis terhadap biaya. Fokus pada kenaikan margin melalui penyesuaian harga, bundling, atau cross‑sell.'}
@@ -139,8 +141,8 @@ const PerformanceInsightsPanel: React.FC<Props> = ({
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-gray-900 mb-1">Perlu Tindakan</h4>
-            <p className="text-gray-700 text-sm leading-relaxed">
+            <h4 className="text-sm font-semibold text-slate-900 mb-1">Perlu Tindakan</h4>
+            <p className="text-slate-700 text-sm leading-relaxed">
               {(() => {
                 const list = lowContributionProducts.length
                   ? lowContributionProducts
@@ -157,15 +159,15 @@ const PerformanceInsightsPanel: React.FC<Props> = ({
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-gray-900 mb-1">Prioritas</h4>
-            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+            <h4 className="text-sm font-semibold text-slate-900 mb-1">Prioritas</h4>
+            <ul className="list-disc list-inside text-slate-700 text-sm space-y-1">
               <li>Naikkan margin produk laku tapi nilai rendah (uji harga, bundling, cross‑sell).</li>
               <li>Amankan suplai produk unggulan dan pertahankan kualitas layanan.</li>
               <li>Tetapkan keputusan reposisi atau phase‑out untuk produk lemah dalam 1 kuartal.</li>
             </ul>
           </div>
 
-          <div className="mt-2 pt-3 border-t text-xs text-gray-500">
+          <div className="mt-2 pt-3 border-t border-slate-200 text-xs text-slate-500">
             Generated at: {new Date(insights.generatedAt).toLocaleString('id-ID')}
           </div>
         </div>

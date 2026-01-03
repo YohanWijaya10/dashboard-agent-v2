@@ -68,7 +68,7 @@ const Dashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
-              <Package className="w-8 h-8 text-primary-600" />
+              <Package className="w-8 h-8 text-indigo-600" />
               <h1 className="text-2xl font-bold ai-title">Inventory Dashboard</h1>
             </div>
             <div className="flex items-center space-x-4">
@@ -81,7 +81,7 @@ const Dashboard: React.FC = () => {
                   className="ai-icon-btn"
                   aria-label="Refresh data"
                 >
-                  <RefreshCw className={`w-5 h-5 text-gray-600 ${loading ? 'animate-spin' : ''}`} />
+                  <RefreshCw className={`w-5 h-5 text-slate-600 ${loading ? 'animate-spin' : ''}`} />
                 </button>
               )}
             </div>

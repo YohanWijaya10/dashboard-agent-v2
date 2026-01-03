@@ -42,15 +42,15 @@ const SummaryPanel: React.FC<SummaryPanelProps> = ({ summary, loading, error, on
   // Loading skeleton
   if (loading) {
     return (
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-8 animate-pulse">
-        <div className="h-8 bg-blue-200 rounded w-1/3 mb-6"></div>
+      <div className="card animate-pulse mb-8">
+        <div className="h-8 bg-slate-200 rounded w-1/3 mb-6"></div>
         <div className="space-y-3">
-          <div className="h-4 bg-blue-100 rounded w-full"></div>
-          <div className="h-4 bg-blue-100 rounded w-5/6"></div>
-          <div className="h-4 bg-blue-100 rounded w-4/5"></div>
-          <div className="h-6 bg-blue-200 rounded w-1/4 mt-6"></div>
-          <div className="h-4 bg-blue-100 rounded w-full"></div>
-          <div className="h-4 bg-blue-100 rounded w-3/4"></div>
+          <div className="h-4 bg-slate-100 rounded w-full"></div>
+          <div className="h-4 bg-slate-100 rounded w-5/6"></div>
+          <div className="h-4 bg-slate-100 rounded w-4/5"></div>
+          <div className="h-6 bg-slate-200 rounded w-1/4 mt-6"></div>
+          <div className="h-4 bg-slate-100 rounded w-full"></div>
+          <div className="h-4 bg-slate-100 rounded w-3/4"></div>
         </div>
       </div>
     );
@@ -59,15 +59,15 @@ const SummaryPanel: React.FC<SummaryPanelProps> = ({ summary, loading, error, on
   // Error state
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+      <div className="bg-rose-50 border border-rose-200 rounded-xl p-6 mb-8">
         <div className="flex items-start">
-          <AlertTriangle className="w-5 h-5 text-red-600 mr-3 mt-1 flex-shrink-0" />
+          <AlertTriangle className="w-5 h-5 text-rose-600 mr-3 mt-1 flex-shrink-0" />
           <div className="flex-1">
-            <h3 className="font-semibold text-red-900 mb-2">Gagal Membuat Ringkasan</h3>
-            <p className="text-red-700 text-sm mb-4">{error}</p>
+            <h3 className="font-semibold text-rose-900 mb-2">Gagal Membuat Ringkasan</h3>
+            <p className="text-rose-700 text-sm mb-4">{error}</p>
             <button
               onClick={onRefresh}
-              className="text-sm text-red-600 hover:text-red-700 font-medium flex items-center"
+              className="text-sm text-rose-700 hover:text-rose-800 font-medium flex items-center"
             >
               <RefreshCw className="w-4 h-4 mr-1" />
               Coba Lagi
@@ -80,36 +80,39 @@ const SummaryPanel: React.FC<SummaryPanelProps> = ({ summary, loading, error, on
 
   // Summary content
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-indigo-600 rounded-lg p-8 mb-8 shadow-md">
-      <div className="flex items-start justify-between mb-6">
-        <div className="flex items-center">
-          <Sparkles className="w-6 h-6 text-indigo-600 mr-3" />
-          <h2 className="text-2xl font-bold text-gray-900">Ringkasan Eksekutif AI</h2>
+    <div className="card mb-8">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <Sparkles className="w-6 h-6 text-indigo-600" />
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Ringkasan Eksekutif AI</h2>
+          <span className="ai-badge">AI Generated</span>
         </div>
         <button
           onClick={onRefresh}
-          className="p-2 hover:bg-indigo-100 rounded-lg transition-colors"
+          className="ai-icon-btn"
           title="Refresh summary"
         >
-          <RefreshCw className="w-5 h-5 text-gray-600 hover:text-indigo-600" />
+          <RefreshCw className="w-5 h-5 text-slate-600" />
         </button>
       </div>
 
-      <div className="prose prose-indigo max-w-none">
+      <div className="h-2 rounded-md bg-gradient-to-r from-indigo-500/10 to-blue-500/10 mb-5"></div>
+
+      <div className="prose prose-slate max-w-none ai-summary-body markdown-body">
         <ReactMarkdown
           components={{
             h3: ({ children }) => (
-              <h3 className="text-lg font-bold text-indigo-900 mt-6 mb-3 first:mt-0 flex items-center">
+              <h3 className="text-base font-semibold tracking-tight text-slate-900 mt-6 mb-2 first:mt-0 flex items-center">
                 {children}
               </h3>
             ),
             p: ({ children }) => (
-              <p className="text-gray-700 leading-relaxed mb-4 text-base">
+              <p className="text-slate-700 leading-relaxed mb-4">
                 {children}
               </p>
             ),
             strong: ({ children }) => (
-              <strong className="font-bold text-indigo-800">
+              <strong className="font-semibold text-indigo-800">
                 {children}
               </strong>
             ),
