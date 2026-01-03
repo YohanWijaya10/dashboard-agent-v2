@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
 import { Sparkles, RefreshCw } from 'lucide-react';
 import type { ProductPerformanceInsightResponse } from '../types';
 
