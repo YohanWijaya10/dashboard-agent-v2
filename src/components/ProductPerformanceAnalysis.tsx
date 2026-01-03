@@ -125,6 +125,54 @@ const ProductPerformanceAnalysis: React.FC = () => {
     } as any;
   }, [topVelocity]);
 
+  // Category cards: derive qualitative reasons and examples without exposing raw numbers
+  const median = (arr: number[]) => (arr.length ? arr[Math.floor(arr.length / 2)] : 0);
+  const medianIssued = useMemo(() => {
+    const arr = [...products.map(p => p.totalIssued30Days || 0)].sort((a, b) => a - b);
+    return median(arr);
+  }, [products]);
+
+  const unitValue = (p: any) => {
+    const issued = Math.max(1, p.totalIssued30Days || 0);
+    return (p.revenuePotential || 0) / issued;
+  };
+  const unitStatus = (p: any) => {
+    const uv = unitValue(p);
+    const cost = p.latestUnitCost || 0;
+    if (uv < cost * 0.98) return 'below_cost' as const;
+    if (uv < cost * 1.1) return 'thin' as const;
+    return 'healthy' as const;
+  };
+
+  const byCategory = useMemo(() => {
+    const g: Record<string, typeof products> = { Star: [], 'Cash Cow': [], 'Question Mark': [], Dog: [] } as any;
+    products.forEach(p => {
+      if (g[p.performanceCategory]) g[p.performanceCategory].push(p);
+    });
+    return g;
+  }, [products]);
+
+  const pickTopByRevenue = (arr: typeof products, n = 2) =>
+    [...arr].sort((a, b) => (b.revenuePotential || 0) - (a.revenuePotential || 0)).slice(0, n);
+
+  const pickQM = useMemo(() => {
+    const qm = byCategory['Question Mark'] || [];
+    const filtered = qm
+      .filter(p => (p.totalIssued30Days || 0) >= medianIssued && unitStatus(p) !== 'healthy')
+      .sort((a, b) => (b.totalIssued30Days || 0) - (a.totalIssued30Days || 0));
+    return (filtered.length ? filtered : qm).slice(0, 3);
+  }, [byCategory, medianIssued]);
+
+  const pickDogs = useMemo(() => {
+    const dogs = byCategory['Dog'] || [];
+    if (!dogs.length) return [] as typeof products;
+    const byRev = [...dogs].sort((a, b) => (a.revenuePotential || 0) - (b.revenuePotential || 0));
+    const byIss = [...dogs].sort((a, b) => (a.totalIssued30Days || 0) - (b.totalIssued30Days || 0));
+    const lowSet = new Set(byRev.slice(0, Math.max(1, Math.floor(dogs.length / 2))).map(p => p.sku));
+    const pick = byIss.filter(p => lowSet.has(p.sku)).slice(0, 3);
+    return pick.length ? pick : byRev.slice(0, 3);
+  }, [byCategory]);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -146,6 +194,69 @@ const ProductPerformanceAnalysis: React.FC = () => {
         onRefresh={refresh}
         products={performance?.products || []}
       />
+
+      {/* Category Explanation Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Stars */}
+        <div className="card">
+          <h3 className="text-lg font-semibold mb-2">Stars</h3>
+          <p className="text-sm text-gray-700 mb-2">
+            Produk penyumbang pendapatan besar dan stabil laku. Nilai per unit berada di atas biaya unit sehingga margin terjaga.
+          </p>
+          <p className="text-sm text-gray-600 mb-3">
+            Contoh: {pickTopByRevenue(byCategory['Star'] || [], 3).map(p => `${p.productName} (${p.sku})`).join(', ') || '-'}
+          </p>
+          <ul className="text-sm text-gray-700 list-disc list-inside">
+            <li>Amankan suplai dan jaga service level.</li>
+            <li>Pertahankan harga; uji varian/upsell.</li>
+          </ul>
+        </div>
+
+        {/* Cash Cows */}
+        <div className="card">
+          <h3 className="text-lg font-semibold mb-2">Cash Cows</h3>
+          <p className="text-sm text-gray-700 mb-2">
+            Pendapatan kuat dan stabil; cocok untuk optimasi margin/biaya sambil menjaga arus kas.
+          </p>
+          <p className="text-sm text-gray-600 mb-3">
+            Contoh: {pickTopByRevenue(byCategory['Cash Cow'] || [], 3).map(p => `${p.productName} (${p.sku})`).join(', ') || '-'}
+          </p>
+          <ul className="text-sm text-gray-700 list-disc list-inside">
+            <li>Optimasi biaya dan efisiensi suplai.</li>
+            <li>Alokasikan surplus untuk mendanai pertumbuhan.</li>
+          </ul>
+        </div>
+
+        {/* Question Marks */}
+        <div className="card">
+          <h3 className="text-lg font-semibold mb-2">Question Marks</h3>
+          <p className="text-sm text-gray-700 mb-2">
+            Laku cepat, namun nilai per unit tipis (harga bersih relatif rendah atau biaya unit tinggi). Kandidat untuk dinaikkan nilainya.
+          </p>
+          <p className="text-sm text-gray-600 mb-3">
+            Contoh: {pickQM.map(p => `${p.productName} (${p.sku})`).join(', ') || '-'}
+          </p>
+          <ul className="text-sm text-gray-700 list-disc list-inside">
+            <li>Uji kenaikan harga 5–10% atau bundling.</li>
+            <li>Cross‑sell untuk menaikkan nilai per transaksi.</li>
+          </ul>
+        </div>
+
+        {/* Dogs (renamed for clarity) */}
+        <div className="card">
+          <h3 className="text-lg font-semibold mb-2">Performa Rendah</h3>
+          <p className="text-sm text-gray-700 mb-2">
+            Permintaan rendah dan kontribusi kecil; berisiko menyerap modal/ruang tanpa imbal hasil memadai.
+          </p>
+          <p className="text-sm text-gray-600 mb-3">
+            Contoh: {pickDogs.map(p => `${p.productName} (${p.sku})`).join(', ') || '-'}
+          </p>
+          <ul className="text-sm text-gray-700 list-disc list-inside">
+            <li>Audit harga/biaya/kompetitor untuk reposisi.</li>
+            <li>Phase‑out bertahap bila tidak membaik.</li>
+          </ul>
+        </div>
+      </div>
 
       {/* Summary Cards */}
       <PerformanceSummaryCards
