@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Sparkles, AlertTriangle, RefreshCw } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
@@ -10,6 +10,35 @@ interface SummaryPanelProps {
 }
 
 const SummaryPanel: React.FC<SummaryPanelProps> = ({ summary, loading, error, onRefresh }) => {
+  const transformed = useMemo(() => {
+    if (!summary) return '';
+    const lines = summary.split(/\r?\n/);
+    const findAmount = () => {
+      const m = summary.match(/Pending PO[^\d]*Rp\s*[\d\.,]+/i);
+      return m ? m[0].replace(/.*?(Rp\s*[\d\.,]+)/i, '$1') : null;
+    };
+    const amount = findAmount();
+    const startIdx = lines.findIndex(l => /^(\s*🎯\s*)?Tindakan\s+Segera/i.test(l));
+    if (startIdx === -1) return summary;
+    // find next heading or end
+    let endIdx = lines.length;
+    for (let i = startIdx + 1; i < lines.length; i++) {
+      if (/^\s*[#]|^(\s*[📊⚠️🎯💡])\s|^\s*Insight\s|^\s*Produk\s|^\s*Butuh\s|^\s*Perlu\s/i.test(lines[i])) {
+        endIdx = i;
+        break;
+      }
+    }
+    const before = lines.slice(0, startIdx);
+    const after = lines.slice(endIdx);
+    const header = '🎯 Tindakan Segera';
+    const bullets = [
+      `- Siapkan penerimaan dan rencana kas untuk Pending PO${amount ? ` ${amount}` : ''}; pastikan kapasitas gudang mencukupi.`,
+      '- Selaraskan definisi “Upcoming PO” (mis. 7–14 hari) dan tampilkan hitungan akurat.',
+      '- Lanjutkan analisis harga vs biaya untuk peluang kenaikan margin produk aktif.'
+    ];
+    const replacement = [header, '', ...bullets, ''];
+    return [...before, ...replacement, ...after].join('\n');
+  }, [summary]);
   // Loading skeleton
   if (loading) {
     return (
@@ -86,7 +115,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = ({ summary, loading, error, on
             ),
           }}
         >
-          {summary || ''}
+          {transformed}
         </ReactMarkdown>
       </div>
     </div>
