@@ -1,20 +1,44 @@
 import React from 'react';
 import { Sparkles, RefreshCw } from 'lucide-react';
-import type { ProductPerformanceInsightResponse } from '../types';
+import type { ProductPerformanceInsightResponse, ProductPerformanceData } from '../types';
 
 interface Props {
   insights: ProductPerformanceInsightResponse | null;
   loading?: boolean;
   error?: string | null;
   onRefresh: () => void;
+  products?: ProductPerformanceData[];
 }
 
 const PerformanceInsightsPanel: React.FC<Props> = ({
   insights,
   loading,
   error,
-  onRefresh
+  onRefresh,
+  products
 }) => {
+  const productList = Array.isArray(products) ? products : [];
+
+  const topStrong = React.useMemo(() => {
+    if (!productList.length) return [] as string[];
+    const sorted = [...productList].sort((a, b) => (b.revenuePotential || 0) - (a.revenuePotential || 0));
+    return sorted.slice(0, 2).map(p => `${p.productName} (${p.sku})`);
+  }, [productList]);
+
+  const improvementCandidates = React.useMemo(() => {
+    if (!productList.length) return [] as string[];
+    const revenues = productList.map(p => p.revenuePotential).sort((a, b) => a - b);
+    const issued = productList.map(p => p.totalIssued30Days).sort((a, b) => a - b);
+    const median = (arr: number[]) => arr.length ? arr[Math.floor(arr.length / 2)] : 0;
+    const medRevenue = median(revenues);
+    const medIssued = median(issued);
+    const filtered = productList
+      .filter(p => (p.totalIssued30Days || 0) >= medIssued && (p.revenuePotential || 0) < medRevenue)
+      .sort((a, b) => (b.totalIssued30Days || 0) - (a.totalIssued30Days || 0))
+      .slice(0, 3)
+      .map(p => `${p.productName} (${p.sku})`);
+    return filtered;
+  }, [productList]);
   return (
     <div className="card mb-8">
       <div className="flex items-center justify-between mb-4">
@@ -61,12 +85,11 @@ const PerformanceInsightsPanel: React.FC<Props> = ({
             <h4 className="text-sm font-semibold text-gray-900 mb-1">Produk Unggulan</h4>
             <p className="text-gray-700 text-sm leading-relaxed">
               {(() => {
-                const top = insights.topPerformers || [];
-                if (top.length === 0) {
+                const list = topStrong.length ? topStrong : (insights.topPerformers || []).slice(0, 2);
+                if (!list.length) {
                   return 'Beberapa produk konsisten laku dan bernilai. Pastikan ketersediaan dan pertahankan posisi harga.';
                 }
-                const list = top.slice(0, 2).join(', ');
-                return `${list} konsisten laku dan bernilai. Pastikan ketersediaan, pertahankan harga, dan pertimbangkan varian/upsell.`;
+                return `${list.join(', ')} konsisten laku dan bernilai. Pastikan ketersediaan, pertahankan harga, dan pertimbangkan varian/upsell.`;
               })()}
             </p>
           </div>
@@ -74,8 +97,9 @@ const PerformanceInsightsPanel: React.FC<Props> = ({
           <div>
             <h4 className="text-sm font-semibold text-gray-900 mb-1">Butuh Perbaikan</h4>
             <p className="text-gray-700 text-sm leading-relaxed">
-              Ada produk yang perputarannya baik namun nilainya belum optimal. Fokus pada kenaikan margin melalui penyesuaian harga,
-              bundling, atau cross‑sell.
+              {improvementCandidates.length
+                ? `${improvementCandidates.join(', ')} cepat laku namun nilai per unit belum optimal. Fokus pada kenaikan margin melalui penyesuaian harga, bundling, atau cross‑sell.`
+                : 'Ada produk yang perputarannya baik namun nilainya belum optimal. Fokus pada kenaikan margin melalui penyesuaian harga, bundling, atau cross‑sell.'}
             </p>
           </div>
 

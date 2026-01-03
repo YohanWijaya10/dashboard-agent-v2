@@ -144,6 +144,7 @@ const ProductPerformanceAnalysis: React.FC = () => {
         loading={loading}
         error={error}
         onRefresh={refresh}
+        products={performance?.products || []}
       />
 
       {/* Summary Cards */}
