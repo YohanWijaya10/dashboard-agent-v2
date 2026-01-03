@@ -8,7 +8,9 @@ import {
   StockHealthData,
   UpcomingPOData,
   StockHealthDetailsResponse,
-  Warehouse
+  Warehouse,
+  ProductPerformanceResponse,
+  ProductPerformanceInsightResponse
 } from '../types';
 
 class ApiService {
@@ -85,6 +87,40 @@ class ApiService {
 
   async getWarehouses(): Promise<Warehouse[]> {
     const response = await this.client.get<Warehouse[]>('/api/warehouses');
+    return response.data;
+  }
+
+  async getProductPerformance(
+    warehouseId?: string,
+    category?: string
+  ): Promise<ProductPerformanceResponse> {
+    const response = await this.client.get<ProductPerformanceResponse>(
+      '/api/dashboard/product-performance',
+      {
+        params: {
+          ...(warehouseId && { warehouseId }),
+          ...(category && { category })
+        },
+        timeout: 30000
+      }
+    );
+    return response.data;
+  }
+
+  async getProductPerformanceInsights(
+    warehouseId?: string,
+    category?: string
+  ): Promise<ProductPerformanceInsightResponse> {
+    const response = await this.client.get<ProductPerformanceInsightResponse>(
+      '/api/dashboard/product-performance-insights',
+      {
+        params: {
+          ...(warehouseId && { warehouseId }),
+          ...(category && { category })
+        },
+        timeout: 90000 // AI generation timeout
+      }
+    );
     return response.data;
   }
 }
