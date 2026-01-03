@@ -12,9 +12,7 @@ import MetricCard from './MetricCard';
 import InventoryValueChart from './Charts/InventoryValueEChart';
 import StockMovementChart from './Charts/StockMovement';
 import TopProductsChart from './Charts/TopProducts';
-import WarehouseDistributionChart from './Charts/WarehouseDistribution';
-import StockHealthChart from './Charts/StockHealth';
-import UpcomingPOs from './Charts/UpcomingPOs';
+// Removed from main view per UX feedback
 import { useInventoryData } from '../hooks/useInventoryData';
 import SummaryPanel from './SummaryPanel';
 import { useSummary } from '../hooks/useSummary';
@@ -33,9 +31,6 @@ const Dashboard: React.FC = () => {
     inventoryValue,
     stockMovement,
     topProducts,
-    warehouseDistribution,
-    stockHealth,
-    upcomingPOs,
     loading,
     error,
     refresh
@@ -182,21 +177,14 @@ const Dashboard: React.FC = () => {
               <StockMovementChart data={stockMovement} loading={loading} />
             </div>
 
-            {/* Charts Row 2 */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <TopProductsChart data={topProducts} loading={loading} />
-              <StockHealthChart data={stockHealth} loading={loading} />
-            </div>
+        {/* Charts Row 2 (Stock Health Status removed) */}
+        <div className="grid grid-cols-1 gap-6 mb-6">
+          <TopProductsChart data={topProducts} loading={loading} />
+        </div>
 
-            {/* Charts Row 3 - Full Width */}
-            <div className="mb-6">
-              <WarehouseDistributionChart data={warehouseDistribution} loading={loading} />
-            </div>
+        {/* Warehouse Distribution removed from main view */}
 
-            {/* Upcoming POs */}
-            <div className="mb-6">
-              <UpcomingPOs data={upcomingPOs} loading={loading} />
-            </div>
+        {/* Upcoming POs removed; will replace with PO Status Summary (hidden for now) */}
 
             {/* Stock Health Details */}
             <div>
