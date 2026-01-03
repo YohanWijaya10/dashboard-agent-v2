@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, RefreshCw, Info } from 'lucide-react';
+import { Sparkles, RefreshCw } from 'lucide-react';
 import type { ProductPerformanceInsightResponse, ProductPerformanceData } from '../types';
 
 interface Props {
@@ -109,49 +109,33 @@ const PerformanceInsightsPanel: React.FC<Props> = ({
                 if (!list.length) {
                   return 'Beberapa produk konsisten laku dan bernilai. Pastikan ketersediaan dan pertahankan posisi harga.';
                 }
-                return `${list.join(', ')} konsisten laku dan bernilai. Pastikan ketersediaan, pertahankan harga, dan pertimbangkan varian/upsell.`;
+                // Tambahkan penjelasan langsung sebagai bukti, tanpa badge terpisah
+                let evidence = '';
+                if (productList.length) {
+                  const skus = new Set(
+                    (topStrong as string[]).map(s => {
+                      const m = s.match(/\(([^)]+)\)$/);
+                      return m ? m[1] : s;
+                    })
+                  );
+                  const inRev = [...skus].some(sku => rankingSets.topRev.has(sku));
+                  const inVel = [...skus].some(sku => rankingSets.topVel.has(sku));
+                  if (inRev && inVel) evidence = ' Terbukti masuk kelompok teratas baik pendapatan maupun kecepatan terjual 30 hari.';
+                  else if (inRev) evidence = ' Terbukti masuk kelompok teratas pendapatan 30 hari.';
+                  else if (inVel) evidence = ' Terbukti masuk kelompok teratas kecepatan terjual 30 hari.';
+                }
+                return `${list.join(', ')} konsisten laku dan bernilai.${evidence} Pastikan ketersediaan, pertahankan harga, dan pertimbangkan varian/upsell.`;
               })()}
             </p>
-            {productList.length > 0 && (() => {
-              const skus = new Set(
-                (topStrong as string[]).map(s => {
-                  const m = s.match(/\(([^)]+)\)$/);
-                  return m ? m[1] : s;
-                })
-              );
-              const inRev = [...skus].some(sku => rankingSets.topRev.has(sku));
-              const inVel = [...skus].some(sku => rankingSets.topVel.has(sku));
-              let text: string | null = null;
-              if (inRev && inVel) text = "Bukti: tampil di 'Produk Paling Menghasilkan' dan 'Produk Paling Cepat Laku'.";
-              else if (inRev) text = "Bukti: tampil di ranking 'Produk Paling Menghasilkan'.";
-              else if (inVel) text = "Bukti: tampil di ranking 'Produk Paling Cepat Laku'.";
-              if (!text) return null;
-              return (
-                <div className="mt-1">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 text-gray-700 px-2 py-0.5 text-xs">
-                    <Info className="w-3 h-3" />
-                    {text}
-                  </span>
-                </div>
-              );
-            })()}
           </div>
 
           <div>
             <h4 className="text-sm font-semibold text-gray-900 mb-1">Butuh Perbaikan</h4>
             <p className="text-gray-700 text-sm leading-relaxed">
               {improvementCandidates.length
-                ? `${improvementCandidates.join(', ')} cepat laku namun nilai per unit belum optimal. Fokus pada kenaikan margin melalui penyesuaian harga, bundling, atau cross‑sell.`
-                : 'Ada produk yang perputarannya baik namun nilainya belum optimal. Fokus pada kenaikan margin melalui penyesuaian harga, bundling, atau cross‑sell.'}
+                ? `${improvementCandidates.join(', ')} cepat laku namun nilai per unit belum optimal—sering muncul di kelompok teratas kecepatan terjual, tetapi bukan penyumbang pendapatan terbesar. Fokus pada kenaikan margin melalui penyesuaian harga, bundling, atau cross‑sell.`
+                : 'Ada produk yang perputarannya baik namun nilainya belum optimal—indikasi nilai per unit/margin masih rendah. Fokus pada kenaikan margin melalui penyesuaian harga, bundling, atau cross‑sell.'}
             </p>
-            {improvementCandidates.length > 0 && (
-              <div className="mt-1">
-                <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 text-gray-700 px-2 py-0.5 text-xs">
-                  <Info className="w-3 h-3" />
-                  {"Bukti: muncul di 'Produk Paling Cepat Laku' tetapi tidak di 'Produk Paling Menghasilkan'; indikasi nilai per unit/margin rendah."}
-                </span>
-              </div>
-            )}
           </div>
 
           <div>
@@ -162,17 +146,9 @@ const PerformanceInsightsPanel: React.FC<Props> = ({
                 const fallback = insights.bottomPerformers || [];
                 const list = (bottomByData.length ? bottomByData : fallback.slice(0, 2));
                 if (!list.length) return 'Identifikasi produk dengan kontribusi rendah untuk direposisi atau di‑phase out bila tidak ada perbaikan.';
-                return `${list.join(', ')} menunjukkan kontribusi rendah. Evaluasi reposisi harga/biaya atau pertimbangkan phase‑out.`;
+                return `${list.join(', ')} menunjukkan kontribusi rendah—tidak masuk dua daftar utama dan berada pada kelompok terbawah kontribusi 30 hari. Evaluasi reposisi harga/biaya atau pertimbangkan phase‑out.`;
               })()}
             </p>
-            {(rankingSets.lowBoth.length > 0) && (
-              <div className="mt-1">
-                <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 text-gray-700 px-2 py-0.5 text-xs">
-                  <Info className="w-3 h-3" />
-                  {"Bukti: tidak muncul di dua ranking utama dan berada pada kelompok terbawah kontribusi 30 hari."}
-                </span>
-              </div>
-            )}
           </div>
 
           <div>
