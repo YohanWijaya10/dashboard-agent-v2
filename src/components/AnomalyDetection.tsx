@@ -37,14 +37,14 @@ const AnomalyDetection: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Anomaly Detection</h2>
-          <p className="text-gray-600 mt-1">
+          <h2 className="text-2xl font-bold ai-title">Anomaly Detection</h2>
+          <p className="text-gray-500 mt-1">
             Real-time anomaly detection with 7-day baseline comparison
           </p>
         </div>
         <button
           onClick={refresh}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          className="ai-icon-btn"
           aria-label="Refresh anomaly data"
         >
           <RefreshCw className={`w-5 h-5 text-gray-600 ${loading ? 'animate-spin' : ''}`} />

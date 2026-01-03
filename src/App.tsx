@@ -3,7 +3,7 @@ import ChatWidget from './components/ChatWidget';
 
 function App() {
   return (
-    <div className="App">
+    <div className="App ai-bg min-h-screen">
       <Dashboard />
       <ChatWidget />
     </div>

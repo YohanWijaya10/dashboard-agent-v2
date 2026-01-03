@@ -9,6 +9,51 @@
 }
 
 @layer components {
+  /* AI theme tokens and surfaces */
+  .ai-bg {
+    /* Subtle gradient + dot grid background */
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.18) 1px, transparent 1px),
+      linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    background-size: 16px 16px, auto;
+    background-position: 0 0, 0 0;
+  }
+
+  .ai-title {
+    background: linear-gradient(90deg, #2563eb 0%, #7c3aed 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .ai-navbar {
+    @apply sticky top-0 z-40 border-b border-gray-200/70 bg-white/70 backdrop-blur shadow-sm;
+  }
+
+  .ai-icon-btn {
+    @apply p-2 rounded-lg transition-colors border border-transparent hover:border-gray-200 hover:bg-white/70;
+  }
+
+  .ai-pill-nav {
+    @apply inline-flex items-center gap-1 p-1 rounded-xl bg-white/60 backdrop-blur border border-gray-200/70 shadow-sm;
+  }
+
+  .ai-tab {
+    @apply shrink-0 whitespace-nowrap px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium rounded-lg text-gray-600 hover:text-gray-900 transition-colors;
+  }
+
+  .ai-tab-active {
+    @apply bg-white text-primary-600 shadow;
+  }
+
+  .ai-panel {
+    @apply bg-white/70 backdrop-blur rounded-xl border border-gray-200/70 shadow-sm;
+  }
+
+  .ai-badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700 border border-primary-100;
+  }
+
   .card {
     @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
   }
