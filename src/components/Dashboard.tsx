@@ -19,8 +19,9 @@ import { useSummary } from '../hooks/useSummary';
 import StockHealthDetailsCard from './StockHealthDetailsCard';
 import { useStockHealthDetails } from '../hooks/useStockHealthDetails';
 import ProductPerformanceAnalysis from './ProductPerformanceAnalysis';
+import AnomalyDetection from './AnomalyDetection';
 
-type TabType = 'dashboard' | 'performance';
+type TabType = 'dashboard' | 'performance' | 'anomaly';
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
@@ -114,6 +115,19 @@ const Dashboard: React.FC = () => {
                 <span>Performance Analysis</span>
               </div>
             </button>
+            <button
+              onClick={() => setActiveTab('anomaly')}
+              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                activeTab === 'anomaly'
+                  ? 'bg-white text-primary-600 border-b-2 border-primary-600'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              <div className="flex items-center space-x-2">
+                <AlertTriangle className="w-4 h-4" />
+                <span>Anomaly Detection</span>
+              </div>
+            </button>
           </div>
         </div>
       </header>
@@ -200,6 +214,11 @@ const Dashboard: React.FC = () => {
         {/* Performance Tab Content (kept mounted) */}
         <div className={activeTab === 'performance' ? '' : 'hidden'}>
           <ProductPerformanceAnalysis />
+        </div>
+
+        {/* Anomaly Detection Tab Content (kept mounted) */}
+        <div className={activeTab === 'anomaly' ? '' : 'hidden'}>
+          <AnomalyDetection />
         </div>
       </main>
     </div>

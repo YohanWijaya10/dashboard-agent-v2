@@ -10,7 +10,9 @@ import {
   StockHealthDetailsResponse,
   Warehouse,
   ProductPerformanceResponse,
-  ProductPerformanceInsightResponse
+  ProductPerformanceInsightResponse,
+  AnomalyDetectionResponse,
+  AnomalyInsightResponse
 } from '../types';
 
 class ApiService {
@@ -120,6 +122,22 @@ class ApiService {
         },
         timeout: 90000 // AI generation timeout
       }
+    );
+    return response.data;
+  }
+
+  async getAnomalyDetection(): Promise<AnomalyDetectionResponse> {
+    const response = await this.client.get<AnomalyDetectionResponse>(
+      '/api/dashboard/anomaly-detection',
+      { timeout: 30000 }
+    );
+    return response.data;
+  }
+
+  async getAnomalyInsights(): Promise<AnomalyInsightResponse> {
+    const response = await this.client.get<AnomalyInsightResponse>(
+      '/api/dashboard/anomaly-insights',
+      { timeout: 90000 } // AI generation timeout
     );
     return response.data;
   }
