@@ -120,8 +120,8 @@ const Dashboard: React.FC = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'dashboard' && (
-          <>
+        {/* Dashboard Tab Content (kept mounted) */}
+        <div className={activeTab === 'dashboard' ? '' : 'hidden'}>
             {/* Executive Summary Hero Section */}
             <SummaryPanel
               summary={summary.summary}
@@ -195,12 +195,12 @@ const Dashboard: React.FC = () => {
                 onRefresh={stockHealthDetails.refresh}
               />
             </div>
-          </>
-        )}
+        </div>
 
-        {activeTab === 'performance' && (
+        {/* Performance Tab Content (kept mounted) */}
+        <div className={activeTab === 'performance' ? '' : 'hidden'}>
           <ProductPerformanceAnalysis />
-        )}
+        </div>
       </main>
     </div>
   );
