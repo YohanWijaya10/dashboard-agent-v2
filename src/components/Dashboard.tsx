@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Package,
   TrendingUp,
@@ -20,8 +20,12 @@ import SummaryPanel from './SummaryPanel';
 import { useSummary } from '../hooks/useSummary';
 import StockHealthDetailsCard from './StockHealthDetailsCard';
 import { useStockHealthDetails } from '../hooks/useStockHealthDetails';
+import ProductPerformanceAnalysis from './ProductPerformanceAnalysis';
+
+type TabType = 'dashboard' | 'performance';
 
 const Dashboard: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const summary = useSummary(true);
   const stockHealthDetails = useStockHealthDetails(undefined, true);
   const {
@@ -66,7 +70,7 @@ const Dashboard: React.FC = () => {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
               <Package className="w-8 h-8 text-primary-600" />
               <h1 className="text-2xl font-bold text-gray-900">Inventory Dashboard</h1>
@@ -75,100 +79,140 @@ const Dashboard: React.FC = () => {
               <span className="text-sm text-gray-500">
                 Last updated: {new Date().toLocaleTimeString('id-ID')}
               </span>
-              <button
-                onClick={refresh}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                aria-label="Refresh data"
-              >
-                <RefreshCw className={`w-5 h-5 text-gray-600 ${loading ? 'animate-spin' : ''}`} />
-              </button>
+              {activeTab === 'dashboard' && (
+                <button
+                  onClick={refresh}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  aria-label="Refresh data"
+                >
+                  <RefreshCw className={`w-5 h-5 text-gray-600 ${loading ? 'animate-spin' : ''}`} />
+                </button>
+              )}
             </div>
+          </div>
+
+          {/* Tab Navigation */}
+          <div className="flex space-x-1 border-b border-gray-200">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                activeTab === 'dashboard'
+                  ? 'bg-white text-primary-600 border-b-2 border-primary-600'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              <div className="flex items-center space-x-2">
+                <Package className="w-4 h-4" />
+                <span>Dashboard</span>
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('performance')}
+              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                activeTab === 'performance'
+                  ? 'bg-white text-primary-600 border-b-2 border-primary-600'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="w-4 h-4" />
+                <span>Performance Analysis</span>
+              </div>
+            </button>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Executive Summary Hero Section */}
-        <SummaryPanel
-          summary={summary.summary}
-          loading={summary.loading}
-          error={summary.error}
-          onRefresh={summary.refresh}
-        />
+        {activeTab === 'dashboard' && (
+          <>
+            {/* Executive Summary Hero Section */}
+            <SummaryPanel
+              summary={summary.summary}
+              loading={summary.loading}
+              error={summary.error}
+              onRefresh={summary.refresh}
+            />
 
-        {/* Metrics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
-          <MetricCard
-            title="Total Inventory Value"
-            value={metrics ? formatCurrency(metrics.totalInventoryValue) : '-'}
-            icon={TrendingUp}
-            loading={loading}
-          />
-          <MetricCard
-            title="Active Products"
-            value={metrics?.totalActiveProducts || 0}
-            icon={Package}
-            loading={loading}
-          />
-          <MetricCard
-            title="Below Safety Stock"
-            value={metrics?.productsBelowSafetyStock || 0}
-            icon={AlertTriangle}
-            alert={metrics ? metrics.productsBelowSafetyStock > 0 : false}
-            loading={loading}
-          />
-          <MetricCard
-            title="Pending PO Value"
-            value={metrics ? formatCurrency(metrics.pendingPOValue) : '-'}
-            icon={ShoppingCart}
-            loading={loading}
-          />
-          <MetricCard
-            title="Active Suppliers"
-            value={metrics?.totalActiveSuppliers || 0}
-            icon={Users}
-            loading={loading}
-          />
-          <MetricCard
-            title="Total Warehouses"
-            value={metrics?.totalWarehouses || 0}
-            icon={Warehouse}
-            loading={loading}
-          />
-        </div>
+            {/* Metrics Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
+              <MetricCard
+                title="Total Inventory Value"
+                value={metrics ? formatCurrency(metrics.totalInventoryValue) : '-'}
+                icon={TrendingUp}
+                loading={loading}
+              />
+              <MetricCard
+                title="Active Products"
+                value={metrics?.totalActiveProducts || 0}
+                icon={Package}
+                loading={loading}
+              />
+              <MetricCard
+                title="Below Safety Stock"
+                value={metrics?.productsBelowSafetyStock || 0}
+                icon={AlertTriangle}
+                alert={metrics ? metrics.productsBelowSafetyStock > 0 : false}
+                loading={loading}
+              />
+              <MetricCard
+                title="Pending PO Value"
+                value={metrics ? formatCurrency(metrics.pendingPOValue) : '-'}
+                icon={ShoppingCart}
+                loading={loading}
+              />
+              <MetricCard
+                title="Active Suppliers"
+                value={metrics?.totalActiveSuppliers || 0}
+                icon={Users}
+                loading={loading}
+              />
+              <MetricCard
+                title="Total Warehouses"
+                value={metrics?.totalWarehouses || 0}
+                icon={Warehouse}
+                loading={loading}
+              />
+            </div>
 
-        {/* Charts Row 1 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <InventoryValueChart data={inventoryValue} loading={loading} />
-          <StockMovementChart data={stockMovement} loading={loading} />
-        </div>
+            {/* Charts Row 1 */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <InventoryValueChart data={inventoryValue} loading={loading} />
+              <StockMovementChart data={stockMovement} loading={loading} />
+            </div>
 
-        {/* Charts Row 2 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <TopProductsChart data={topProducts} loading={loading} />
-          <StockHealthChart data={stockHealth} loading={loading} />
-        </div>
+            {/* Charts Row 2 */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <TopProductsChart data={topProducts} loading={loading} />
+              <StockHealthChart data={stockHealth} loading={loading} />
+            </div>
 
-        {/* Charts Row 3 - Full Width */}
-        <div className="mb-6">
-          <WarehouseDistributionChart data={warehouseDistribution} loading={loading} />
-        </div>
+            {/* Charts Row 3 - Full Width */}
+            <div className="mb-6">
+              <WarehouseDistributionChart data={warehouseDistribution} loading={loading} />
+            </div>
 
-        {/* Upcoming POs */}
-        <div className="mb-6">
-          <UpcomingPOs data={upcomingPOs} loading={loading} />
-        </div>
+            {/* Upcoming POs */}
+            <div className="mb-6">
+              <UpcomingPOs data={upcomingPOs} loading={loading} />
+            </div>
 
-        {/* Stock Health Details */}
-        <div>
-          <StockHealthDetailsCard
-            data={stockHealthDetails.data}
-            loading={stockHealthDetails.loading}
-            error={stockHealthDetails.error}
-            onRefresh={stockHealthDetails.refresh}
-          />
-        </div>
+            {/* Stock Health Details */}
+            <div>
+              <StockHealthDetailsCard
+                data={stockHealthDetails.data}
+                loading={stockHealthDetails.loading}
+                error={stockHealthDetails.error}
+                onRefresh={stockHealthDetails.refresh}
+              />
+            </div>
+          </>
+        )}
+
+        {activeTab === 'performance' && (
+          <ProductPerformanceAnalysis />
+        )}
       </main>
     </div>
   );
