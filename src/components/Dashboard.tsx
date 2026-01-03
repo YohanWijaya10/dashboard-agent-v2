@@ -18,9 +18,12 @@ import UpcomingPOs from './Charts/UpcomingPOs';
 import { useInventoryData } from '../hooks/useInventoryData';
 import SummaryPanel from './SummaryPanel';
 import { useSummary } from '../hooks/useSummary';
+import StockHealthDetailsCard from './StockHealthDetailsCard';
+import { useStockHealthDetails } from '../hooks/useStockHealthDetails';
 
 const Dashboard: React.FC = () => {
   const summary = useSummary(true);
+  const stockHealthDetails = useStockHealthDetails(undefined, true);
   const {
     metrics,
     inventoryValue,
@@ -153,8 +156,18 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Upcoming POs */}
-        <div>
+        <div className="mb-6">
           <UpcomingPOs data={upcomingPOs} loading={loading} />
+        </div>
+
+        {/* Stock Health Details */}
+        <div>
+          <StockHealthDetailsCard
+            data={stockHealthDetails.data}
+            loading={stockHealthDetails.loading}
+            error={stockHealthDetails.error}
+            onRefresh={stockHealthDetails.refresh}
+          />
         </div>
       </main>
     </div>

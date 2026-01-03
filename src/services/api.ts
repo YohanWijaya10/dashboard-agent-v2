@@ -6,7 +6,9 @@ import {
   TopProductData,
   WarehouseDistributionData,
   StockHealthData,
-  UpcomingPOData
+  UpcomingPOData,
+  StockHealthDetailsResponse,
+  Warehouse
 } from '../types';
 
 class ApiService {
@@ -67,6 +69,22 @@ class ApiService {
       '/api/dashboard/executive-summary',
       { timeout: 90000 } // 90 seconds for AI generation
     );
+    return response.data;
+  }
+
+  async getStockHealthDetails(warehouseId?: string): Promise<StockHealthDetailsResponse> {
+    const response = await this.client.get<StockHealthDetailsResponse>(
+      '/api/dashboard/stock-health-details',
+      {
+        params: warehouseId ? { warehouseId } : {},
+        timeout: 90000 // 90 seconds for AI generation
+      }
+    );
+    return response.data;
+  }
+
+  async getWarehouses(): Promise<Warehouse[]> {
+    const response = await this.client.get<Warehouse[]>('/api/warehouses');
     return response.data;
   }
 }
