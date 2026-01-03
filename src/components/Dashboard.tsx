@@ -88,14 +88,20 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex space-x-1 border-b border-gray-200">
+          <div
+            className="flex space-x-1 border-b border-gray-200 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0"
+            role="tablist"
+            aria-label="Dashboard tabs"
+          >
             <button
               onClick={() => setActiveTab('dashboard')}
-              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+              className={`shrink-0 whitespace-nowrap px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-t-lg transition-colors ${
                 activeTab === 'dashboard'
                   ? 'bg-white text-primary-600 border-b-2 border-primary-600'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
+              role="tab"
+              aria-selected={activeTab === 'dashboard'}
             >
               <div className="flex items-center space-x-2">
                 <Package className="w-4 h-4" />
@@ -104,28 +110,34 @@ const Dashboard: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('performance')}
-              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+              className={`shrink-0 whitespace-nowrap px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-t-lg transition-colors ${
                 activeTab === 'performance'
                   ? 'bg-white text-primary-600 border-b-2 border-primary-600'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
+              role="tab"
+              aria-selected={activeTab === 'performance'}
             >
               <div className="flex items-center space-x-2">
                 <TrendingUp className="w-4 h-4" />
-                <span>Performance Analysis</span>
+                <span className="sm:hidden">Performance</span>
+                <span className="hidden sm:inline">Performance Analysis</span>
               </div>
             </button>
             <button
               onClick={() => setActiveTab('anomaly')}
-              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+              className={`shrink-0 whitespace-nowrap px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-t-lg transition-colors ${
                 activeTab === 'anomaly'
                   ? 'bg-white text-primary-600 border-b-2 border-primary-600'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
+              role="tab"
+              aria-selected={activeTab === 'anomaly'}
             >
               <div className="flex items-center space-x-2">
                 <AlertTriangle className="w-4 h-4" />
-                <span>Anomaly Detection</span>
+                <span className="sm:hidden">Anomaly</span>
+                <span className="hidden sm:inline">Anomaly Detection</span>
               </div>
             </button>
           </div>
