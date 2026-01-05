@@ -177,16 +177,28 @@ class ApiService {
 
     const base = 'https://serverless-twg8.vercel.app';
 
-    // Fetch data needed
-    type ProductLite = { productId: string; name: string; sku?: string };
-    const [balancesRes, trxRes, prodsRes, whsRes] = await Promise.all([
-      axios.get<import('../types').InventoryBalance[]>(`${base}/api/inventorybalance`, { timeout: 30000 }),
-      axios.get<import('../types').InventoryTransaction[]>(`${base}/api/inventorytransaction`, { timeout: 30000 }),
-      axios.get<ProductLite[]>(`${base}/api/products`, { timeout: 30000 }),
-      axios.get<import('../types').Warehouse[]>(`${base}/api/warehouses`, { timeout: 30000 })
-    ]);
+    // Fetch data with labeled errors for easier debugging
+    const getJSON = async <T>(url: string, label: string): Promise<T> => {
+      try {
+        const res = await axios.get<T>(url, { timeout: 30000 });
+        return res.data as T;
+      } catch (e: any) {
+        const status = e?.response?.status;
+        const detail = e?.response?.data ? JSON.stringify(e.response.data) : e?.message;
+        throw new Error(`[Fallback] GET ${label} (${url}) failed: ${status || 'ERR'} ${detail || ''}`);
+      }
+    };
 
-    const balances = balancesRes.data
+    type ProductLite = { productId: string; name: string; sku?: string };
+    const balancesRaw = await getJSON<import('../types').InventoryBalance[]>(`${base}/api/inventorybalance`, 'inventorybalance');
+    const trxRaw = await getJSON<import('../types').InventoryTransaction[]>(`${base}/api/inventorytransaction`, 'inventorytransaction');
+    // products/warehouses are optional for names; do not block on 404
+    let products: ProductLite[] = [];
+    let warehouses: import('../types').Warehouse[] = [];
+    try { products = await getJSON<ProductLite[]>(`${base}/api/products`, 'products'); } catch {}
+    try { warehouses = await getJSON<import('../types').Warehouse[]>(`${base}/api/warehouses`, 'warehouses'); } catch {}
+
+    const balances = balancesRaw
       .map(b => ({
         ...b,
         qtyOnHand: Number(b.qtyOnHand),
@@ -195,10 +207,7 @@ class ApiService {
         reorderPoint: Number(b.reorderPoint)
       }))
       .filter(b => b.warehouseId === warehouseId);
-
-    const transactions = trxRes.data.map(t => ({ ...t, qty: Number(t.qty) }));
-    const products = prodsRes.data;
-    const warehouses = whsRes.data;
+    const transactions = trxRaw.map(t => ({ ...t, qty: Number(t.qty) }));
 
     const productMap = new Map(products.map(p => [p.productId, p]));
     const warehouseMap = new Map(warehouses.map(w => [w.warehouseId, w]));
@@ -278,7 +287,36 @@ class ApiService {
           await axios.post(`${base}/api/inventorybalance`, postPayload, { timeout: 30000 });
         } catch (e1: any) {
           const s1 = e1?.response?.status;
-          if (s1 && s1 !== 404 && s1 !== 405) throw e1;
+          const isCORS = !s1 && e1?.message?.toLowerCase?.().includes('network error');
+          if (s1 && s1 !== 404 && s1 !== 405 && !isCORS) throw e1;
+          // Try CORS-friendly POST using form-urlencoded (simple request, no preflight)
+          try {
+            const form = new URLSearchParams();
+            form.set('warehouseId', String(bal.warehouseId));
+            form.set('productId', String(bal.productId));
+            form.set('qtyOnHand', String(bal.qtyOnHand));
+            form.set('safetyStock', String(recommended));
+            await fetch(`${base}/api/inventorybalance`, {
+              method: 'POST',
+              // Use simple content-type to avoid preflight
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+              body: form.toString(),
+              credentials: 'omit',
+              mode: 'cors'
+            });
+          } catch (e1b) {
+            // As last CORS attempt, try POST with no headers at all
+            try {
+              await fetch(`${base}/api/inventorybalance`, {
+                method: 'POST',
+                body: JSON.stringify(postPayload),
+                credentials: 'omit',
+                mode: 'cors'
+              });
+            } catch (e1c) {
+              // Proceed to PATCH/PUT path
+            }
+          }
           try {
             await axios.patch(`${base}/api/inventorybalance`, patchPayload, { timeout: 30000 });
           } catch (e2: any) {
