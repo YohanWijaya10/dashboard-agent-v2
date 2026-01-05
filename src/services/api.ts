@@ -157,7 +157,15 @@ class ApiService {
     const {
       serviceLevel = 0.95,
       leadTimeDays = 7,
+      // legacy single cap (used if new caps not provided)
       maxChangePercent = 20,
+      // new guardrails
+      downCapPercent,
+      upCapPercent,
+      hysteresisDelta = 10,
+      cooldownDays = 14,
+      onlyIncrease = false,
+      minDaysCover = 7,
       roundToPack = null,
       minSafetyStock = 0
     } = policy || {};
@@ -199,8 +207,8 @@ class ApiService {
     const productMap = new Map(products.map(p => [p.productId, p]));
     const warehouseMap = new Map(warehouses.map(w => [w.warehouseId, w]));
 
-    // Build last 30 days date keys
-    const windowDays = 30;
+    // Build last 60 days date keys
+    const windowDays = 60;
     const dates: string[] = [];
     const today = new Date();
     for (let i = windowDays - 1; i >= 0; i--) {
@@ -228,6 +236,9 @@ class ApiService {
 
     const changes: import('../types').SafetyStockAdjustment[] = [];
 
+    // cooldown key helper
+    const coolKey = (w: string, p: string) => `ss_cooldown_${w}_${p}`;
+
     for (const bal of balances) {
       const daily = dates.map(date => issueByKey.get(`${date}|${bal.productId}|${bal.warehouseId}`) || 0);
       const sorted = [...daily].sort((a, b) => a - b);
@@ -236,17 +247,51 @@ class ApiService {
       const mean = clamped.reduce((s, v) => s + v, 0) / (clamped.length || 1);
       const variance = clamped.reduce((s, v) => s + (v - mean) * (v - mean), 0) / Math.max(1, clamped.length - 1);
       const stdDaily = Math.sqrt(variance);
+      const last7 = clamped.slice(-7);
+      const avg7 = last7.length ? last7.reduce((s, v) => s + v, 0) / last7.length : mean;
 
       const sigmaLT = stdDaily * Math.sqrt(Math.max(1, leadTimeDays));
-      let recommended = Math.max(minSafetyStock, Math.round(z * sigmaLT));
+      const baseBySigma = Math.round(z * sigmaLT);
+      const floorByDays = Math.round(Math.max(minSafetyStock, (minDaysCover || 0) * avg7));
+      const floorOp = Math.max(floorByDays, Number(bal.reorderPoint) || 0, minSafetyStock);
+      let baseRecommended = Math.max(baseBySigma, floorOp);
 
       const current = Number(bal.safetyStock) || 0;
-      if (maxChangePercent > 0) {
-        const maxUp = Math.round(current * (1 + maxChangePercent / 100));
-        const maxDown = Math.round(current * (1 - maxChangePercent / 100));
+      // Hysteresis: skip small changes
+      const percDelta = current === 0 ? 100 : (Math.abs(baseRecommended - current) / Math.max(1, current)) * 100;
+      if (percDelta < (hysteresisDelta || 0)) {
+        baseRecommended = current;
+      }
+
+      // Anti-ratcheting: block decrease if current close to base target (<= 1.2x)
+      if (baseRecommended < current && current <= baseRecommended * 1.2) {
+        baseRecommended = current;
+      }
+
+      // Cooldown for decreases
+      if (baseRecommended < current) {
+        if (onlyIncrease) baseRecommended = current;
+        const lastDecTs = typeof window !== 'undefined' ? localStorage.getItem(coolKey(bal.warehouseId, bal.productId)) : null;
+        if (lastDecTs) {
+          const days = (Date.now() - Number(lastDecTs)) / (1000 * 60 * 60 * 24);
+          if (days < (cooldownDays || 0)) {
+            baseRecommended = current;
+          }
+        }
+      }
+
+      // Apply asymmetric caps (fallback to legacy maxChangePercent if not provided)
+      const upCap = (typeof upCapPercent === 'number') ? upCapPercent : maxChangePercent;
+      const downCap = (typeof downCapPercent === 'number') ? downCapPercent : maxChangePercent;
+      let recommended = baseRecommended;
+      if (recommended > current && upCap > 0) {
+        const maxUp = Math.round(current * (1 + upCap / 100));
         recommended = Math.min(recommended, maxUp);
+      } else if (recommended < current && downCap > 0) {
+        const maxDown = Math.round(current * (1 - downCap / 100));
         recommended = Math.max(recommended, maxDown);
       }
+
       if (roundToPack && roundToPack > 0) {
         const packs = Math.max(1, Math.round(recommended / roundToPack));
         recommended = packs * roundToPack;
@@ -281,8 +326,13 @@ class ApiService {
           currentSafetyStock: current,
           recommendedSafetyStock: recommended,
           changePercent,
-          reason: `z=${z.toFixed(2)}, σ_d=${stdDaily.toFixed(2)}, LT=${leadTimeDays}d`
+          reason: `z=${z.toFixed(2)}, σ_d=${stdDaily.toFixed(2)}, LT=${leadTimeDays}d, floor=${floorOp}`
         });
+
+        // Record cooldown when decreasing
+        if (recommended < current && typeof window !== 'undefined') {
+          localStorage.setItem(coolKey(bal.warehouseId, bal.productId), String(Date.now()));
+        }
       }
     }
 

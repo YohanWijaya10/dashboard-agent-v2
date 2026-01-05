@@ -220,7 +220,15 @@ export interface AnomalyInsightResponse {
 export interface SafetyStockPolicy {
   serviceLevel?: number;
   leadTimeDays?: number;
+  // Deprecated in favor of asymmetric caps; still supported for backward-compat
   maxChangePercent?: number;
+  // New guardrails
+  downCapPercent?: number; // e.g., 10
+  upCapPercent?: number;   // e.g., 30
+  hysteresisDelta?: number; // minimum % delta to apply change, e.g., 10
+  cooldownDays?: number;    // min days between decreases per SKU, e.g., 14
+  onlyIncrease?: boolean;   // true = block decreases entirely
+  minDaysCover?: number;    // floor by days of average demand (7)
   roundToPack?: number | null;
   minSafetyStock?: number;
 }

@@ -8,7 +8,12 @@ const SafetyStockAutoAdjust: React.FC = () => {
   // Simple policy controls with sane defaults
   const [serviceLevel, setServiceLevel] = useState(0.95);
   const [leadTimeDays, setLeadTimeDays] = useState(7);
-  const [maxChangePercent, setMaxChangePercent] = useState(20);
+  const [downCapPercent, setDownCapPercent] = useState(10);
+  const [upCapPercent, setUpCapPercent] = useState(30);
+  const [hysteresisDelta, setHysteresisDelta] = useState(10);
+  const [cooldownDays, setCooldownDays] = useState(14);
+  const [onlyIncrease, setOnlyIncrease] = useState(false);
+  const [minDaysCover, setMinDaysCover] = useState(7);
   const [roundToPack, setRoundToPack] = useState<number | ''>('');
   const [minSafetyStock, setMinSafetyStock] = useState(0);
 
@@ -16,7 +21,12 @@ const SafetyStockAutoAdjust: React.FC = () => {
     await runAutoAdjust({
       serviceLevel,
       leadTimeDays,
-      maxChangePercent,
+      downCapPercent,
+      upCapPercent,
+      hysteresisDelta,
+      cooldownDays,
+      onlyIncrease,
+      minDaysCover,
       roundToPack: typeof roundToPack === 'number' && roundToPack > 0 ? roundToPack : null,
       minSafetyStock
     });
@@ -80,8 +90,13 @@ const SafetyStockAutoAdjust: React.FC = () => {
           </div>
 
           <div>
-            <label className="ai-label">Max Change (%)</label>
-            <input type="number" className="ai-input" min={0} value={maxChangePercent} onChange={e => setMaxChangePercent(Number(e.target.value))} />
+            <label className="ai-label">Down Cap (%)</label>
+            <input type="number" className="ai-input" min={0} value={downCapPercent} onChange={e => setDownCapPercent(Number(e.target.value))} />
+          </div>
+
+          <div>
+            <label className="ai-label">Up Cap (%)</label>
+            <input type="number" className="ai-input" min={0} value={upCapPercent} onChange={e => setUpCapPercent(Number(e.target.value))} />
           </div>
 
           <div>
@@ -92,6 +107,26 @@ const SafetyStockAutoAdjust: React.FC = () => {
           <div>
             <label className="ai-label">Min Safety Stock</label>
             <input type="number" className="ai-input" min={0} value={minSafetyStock} onChange={e => setMinSafetyStock(Number(e.target.value))} />
+          </div>
+
+          <div>
+            <label className="ai-label">Min Days Cover (floor)</label>
+            <input type="number" className="ai-input" min={0} value={minDaysCover} onChange={e => setMinDaysCover(Number(e.target.value))} />
+          </div>
+
+          <div>
+            <label className="ai-label">Hysteresis Delta (%)</label>
+            <input type="number" className="ai-input" min={0} value={hysteresisDelta} onChange={e => setHysteresisDelta(Number(e.target.value))} />
+          </div>
+
+          <div>
+            <label className="ai-label">Cooldown (days)</label>
+            <input type="number" className="ai-input" min={0} value={cooldownDays} onChange={e => setCooldownDays(Number(e.target.value))} />
+          </div>
+
+          <div className="flex items-center mt-2">
+            <input id="onlyInc" type="checkbox" className="mr-2" checked={onlyIncrease} onChange={e => setOnlyIncrease(e.target.checked)} />
+            <label htmlFor="onlyInc" className="ai-label">Only increase (block decrease)</label>
           </div>
         </div>
 
