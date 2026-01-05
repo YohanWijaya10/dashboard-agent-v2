@@ -243,3 +243,23 @@ export interface SafetyStockAutoAdjustResponse {
   changes: SafetyStockAdjustment[];
   generatedAt: string;
 }
+
+// Minimal DB model types for client-side fallback
+export interface InventoryTransaction {
+  trxId: string;
+  trxDate: string;
+  warehouseId: string;
+  productId: string;
+  trxType: 'ISSUE' | 'RECEIPT';
+  qty: number | string;
+}
+
+export interface InventoryBalance {
+  warehouseId: string;
+  productId: string;
+  qtyOnHand: number | string;
+  qtyReserved: number | string;
+  safetyStock: number | string;
+  reorderPoint: number | string;
+  updatedAt: string;
+}
