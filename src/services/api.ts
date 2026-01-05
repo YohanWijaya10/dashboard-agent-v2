@@ -254,63 +254,20 @@ class ApiService {
       if (!Number.isFinite(recommended)) recommended = current;
 
       if (recommended !== current) {
-        // Persist update: try POST (upsert), then PATCH, then PUT as last resort
+        // Persist update with POST JSON (serverless supports POST upsert)
         const postPayload = {
           warehouseId: bal.warehouseId,
           productId: bal.productId,
           qtyOnHand: bal.qtyOnHand,
           safetyStock: recommended
         } as const;
-        const patchPayload = {
-          warehouseId: bal.warehouseId,
-          productId: bal.productId,
-          safetyStock: recommended
-        } as const;
-        const fullRecord = {
-          ...bal,
-          safetyStock: recommended
-        };
         try {
           await axios.post(`${base}/api/inventorybalance`, postPayload, { timeout: 30000 });
-        } catch (e1: any) {
-          const s1 = e1?.response?.status;
-          const isCORS = !s1 && e1?.message?.toLowerCase?.().includes('network error');
-          if (s1 && s1 !== 404 && s1 !== 405 && !isCORS) throw e1;
-          // Try CORS-friendly POST using form-urlencoded (simple request, no preflight)
-          try {
-            const form = new URLSearchParams();
-            form.set('warehouseId', String(bal.warehouseId));
-            form.set('productId', String(bal.productId));
-            form.set('qtyOnHand', String(bal.qtyOnHand));
-            form.set('safetyStock', String(recommended));
-            await fetch(`${base}/api/inventorybalance`, {
-              method: 'POST',
-              // Use simple content-type to avoid preflight
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-              body: form.toString(),
-              credentials: 'omit',
-              mode: 'cors'
-            });
-          } catch (e1b) {
-            // As last CORS attempt, try POST with no headers at all
-            try {
-              await fetch(`${base}/api/inventorybalance`, {
-                method: 'POST',
-                body: JSON.stringify(postPayload),
-                credentials: 'omit',
-                mode: 'cors'
-              });
-            } catch (e1c) {
-              // Proceed to PATCH/PUT path
-            }
-          }
-          try {
-            await axios.patch(`${base}/api/inventorybalance`, patchPayload, { timeout: 30000 });
-          } catch (e2: any) {
-            const s2 = e2?.response?.status;
-            if (s2 && s2 !== 404 && s2 !== 405) throw e2;
-            await axios.put(`${base}/api/inventorybalance`, fullRecord, { timeout: 30000 });
-          }
+        } catch (e: any) {
+          const status = e?.response?.status;
+          const body = e?.response?.data ? JSON.stringify(e.response.data) : '';
+          const msg = `POST ${base}/api/inventorybalance failed: ${status || 'ERR'} ${body}`;
+          throw new Error(msg);
         }
 
         const product = productMap.get(bal.productId);

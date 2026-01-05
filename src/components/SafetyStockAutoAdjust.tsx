@@ -41,15 +41,27 @@ const SafetyStockAutoAdjust: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="ai-label">Warehouse</label>
-            <select
-              className="ai-input"
-              value={selectedWarehouse}
-              onChange={(e) => setSelectedWarehouse(e.target.value)}
-            >
-              {warehouses.map(w => (
-                <option key={w.warehouseId} value={w.warehouseId}>{w.name}</option>
-              ))}
-            </select>
+            {warehouses.length > 0 ? (
+              <select
+                className="ai-input"
+                value={selectedWarehouse}
+                onChange={(e) => setSelectedWarehouse(e.target.value)}
+              >
+                {warehouses.map(w => (
+                  <option key={w.warehouseId} value={w.warehouseId}>{w.name}</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                className="ai-input"
+                placeholder="Masukkan Warehouse ID (mis. W001)"
+                value={selectedWarehouse}
+                onChange={(e) => setSelectedWarehouse(e.target.value)}
+              />
+            )}
+            {warehouses.length === 0 && (
+              <p className="text-xs text-slate-500 mt-1">Tidak bisa memuat daftar gudang (CORS). Isi ID gudang secara manual.</p>
+            )}
           </div>
 
           <div>
@@ -142,4 +154,3 @@ const SafetyStockAutoAdjust: React.FC = () => {
 };
 
 export default SafetyStockAutoAdjust;
-

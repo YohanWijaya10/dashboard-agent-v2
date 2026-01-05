@@ -12,30 +12,21 @@ export function useSafetyStockAuto() {
 
   useEffect(() => {
     let mounted = true;
+    const base = 'https://serverless-twg8.vercel.app';
     const load = async () => {
       try {
-        const ws = await api.getWarehouses();
+        // Go directly to serverless to avoid backend 404 noise
+        const res = await axios.get<Warehouse[]>(`${base}/api/warehouses`, { timeout: 20000 });
         if (!mounted) return;
-        const active = ws.filter(w => w.isActive);
+        const active = res.data.filter(w => w.isActive);
         setWarehouses(active);
         if (active.length && !selectedWarehouse) {
           setSelectedWarehouse(active[0].warehouseId);
         }
-      } catch (e1: any) {
-        try {
-          // Fallback directly to serverless if backend route 404
-          const base = 'https://serverless-twg8.vercel.app';
-          const res = await axios.get<Warehouse[]>(`${base}/api/warehouses`, { timeout: 20000 });
-          if (!mounted) return;
-          const active = res.data.filter(w => w.isActive);
-          setWarehouses(active);
-          if (active.length && !selectedWarehouse) {
-            setSelectedWarehouse(active[0].warehouseId);
-          }
-        } catch (e2: any) {
-          if (!mounted) return;
-          setError(e2?.response?.data?.message || e2?.message || 'Failed to load warehouses');
-        }
+      } catch (e: any) {
+        if (!mounted) return;
+        // Likely CORS; fall back to manual input (keep error for UI hint)
+        setError(e?.response?.data?.message || e?.message || 'Failed to load warehouses (CORS). Isi ID gudang manual.');
       }
     };
     load();
