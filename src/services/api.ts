@@ -146,21 +146,8 @@ class ApiService {
     warehouseId: string,
     policy?: Partial<import('../types').SafetyStockPolicy>
   ): Promise<import('../types').SafetyStockAutoAdjustResponse> {
-    try {
-      const response = await this.client.post<import('../types').SafetyStockAutoAdjustResponse>(
-        '/api/dashboard/safety-stock-auto-adjust',
-        { warehouseId, policy },
-        { timeout: 30000 }
-      );
-      return response.data;
-    } catch (err: any) {
-      const status = err?.response?.status;
-      if (status === 404) {
-        // Fallback: compute and patch directly to serverless DB API
-        return await this.clientSideAutoAdjust(warehouseId, policy);
-      }
-      throw err;
-    }
+    // Backend production route is not deployed; go directly to serverless fallback.
+    return await this.clientSideAutoAdjust(warehouseId, policy);
   }
 
   private async clientSideAutoAdjust(
