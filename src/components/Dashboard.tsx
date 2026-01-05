@@ -20,8 +20,9 @@ import StockHealthDetailsCard from './StockHealthDetailsCard';
 import { useStockHealthDetails } from '../hooks/useStockHealthDetails';
 import ProductPerformanceAnalysis from './ProductPerformanceAnalysis';
 import AnomalyDetection from './AnomalyDetection';
+import SafetyStockAutoAdjust from './SafetyStockAutoAdjust';
 
-type TabType = 'dashboard' | 'performance' | 'anomaly';
+type TabType = 'dashboard' | 'performance' | 'anomaly' | 'safety';
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
@@ -129,6 +130,19 @@ const Dashboard: React.FC = () => {
                   <span className="hidden sm:inline">Anomaly Detection</span>
                 </div>
               </button>
+              <button
+                onClick={() => setActiveTab('safety')}
+                className={`ai-tab ${activeTab === 'safety' ? 'ai-tab-active' : ''}`}
+                role="tab"
+                aria-selected={activeTab === 'safety'}
+              >
+                <div className="flex items-center space-x-2">
+                  {/* Reuse TrendingUp icon to avoid new imports in some bundlers */}
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="sm:hidden">Safety</span>
+                  <span className="hidden sm:inline">Safety Stock</span>
+                </div>
+              </button>
             </div>
           </div>
         </div>
@@ -221,6 +235,11 @@ const Dashboard: React.FC = () => {
         {/* Anomaly Detection Tab Content (kept mounted) */}
         <div className={activeTab === 'anomaly' ? '' : 'hidden'}>
           <AnomalyDetection />
+        </div>
+
+        {/* Safety Stock Tab Content (kept mounted) */}
+        <div className={activeTab === 'safety' ? '' : 'hidden'}>
+          <SafetyStockAutoAdjust />
         </div>
       </main>
     </div>

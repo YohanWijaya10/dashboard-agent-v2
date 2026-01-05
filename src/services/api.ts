@@ -141,6 +141,18 @@ class ApiService {
     );
     return response.data;
   }
+
+  async autoAdjustSafetyStock(
+    warehouseId: string,
+    policy?: Partial<import('../types').SafetyStockPolicy>
+  ): Promise<import('../types').SafetyStockAutoAdjustResponse> {
+    const response = await this.client.post<import('../types').SafetyStockAutoAdjustResponse>(
+      '/api/dashboard/safety-stock-auto-adjust',
+      { warehouseId, policy },
+      { timeout: 30000 }
+    );
+    return response.data;
+  }
 }
 
 export default new ApiService();
