@@ -160,6 +160,13 @@ export interface AnomalyItem {
   detectedAt: string;
   description: string;
   insight?: string;
+  probableCause?: 'demand_spike' | 'receipt_delay' | 'duplicate_entry' | 'process_change' | 'data_error' | 'unknown';
+  estimatedImpact?: {
+    stockRiskDays?: number;
+    excessQty?: number;
+    potentialLostSalesQty?: number;
+    notes?: string;
+  };
 }
 
 export interface AlertSummary {
@@ -168,6 +175,19 @@ export interface AlertSummary {
   medium: number;
   low: number;
   totalCount: number;
+  meta?: {
+    lowNotEmitted: true;
+    lowThresholdNote: string;
+  };
+  todayPriorities?: {
+    productId: string;
+    warehouseId?: string;
+    severity: SeverityLevel;
+    title: string;
+    rationale: string;
+    suggestedActions: string[];
+    confidence: 'low' | 'medium' | 'high';
+  }[];
 }
 
 export interface StockoutHistoryItem {
