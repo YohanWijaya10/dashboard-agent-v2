@@ -167,7 +167,6 @@ class ApiService {
     warehouseId: string,
     policy?: Partial<import('../types').SafetyStockPolicy>
   ): Promise<import('../types').SafetyStockAutoAdjustResponse> {
-    const { SafetyStockAutoAdjustResponse } = (await import('../types')) as any;
     const {
       serviceLevel = 0.95,
       leadTimeDays = 7,
@@ -179,10 +178,11 @@ class ApiService {
     const base = 'https://serverless-twg8.vercel.app';
 
     // Fetch data needed
+    type ProductLite = { productId: string; name: string; sku?: string };
     const [balancesRes, trxRes, prodsRes, whsRes] = await Promise.all([
       axios.get<import('../types').InventoryBalance[]>(`${base}/api/inventorybalance`, { timeout: 30000 }),
       axios.get<import('../types').InventoryTransaction[]>(`${base}/api/inventorytransaction`, { timeout: 30000 }),
-      axios.get<import('../types').Product[]>(`${base}/api/products`, { timeout: 30000 }),
+      axios.get<ProductLite[]>(`${base}/api/products`, { timeout: 30000 }),
       axios.get<import('../types').Warehouse[]>(`${base}/api/warehouses`, { timeout: 30000 })
     ]);
 
