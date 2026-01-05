@@ -274,21 +274,17 @@ class ApiService {
           ...bal,
           safetyStock: recommended
         };
-        let saved = false;
         try {
           await axios.post(`${base}/api/inventorybalance`, postPayload, { timeout: 30000 });
-          saved = true;
         } catch (e1: any) {
           const s1 = e1?.response?.status;
           if (s1 && s1 !== 404 && s1 !== 405) throw e1;
           try {
             await axios.patch(`${base}/api/inventorybalance`, patchPayload, { timeout: 30000 });
-            saved = true;
           } catch (e2: any) {
             const s2 = e2?.response?.status;
             if (s2 && s2 !== 404 && s2 !== 405) throw e2;
             await axios.put(`${base}/api/inventorybalance`, fullRecord, { timeout: 30000 });
-            saved = true;
           }
         }
 
