@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import api from '../services/api';
 import { Warehouse, SafetyStockAutoAdjustResponse, SafetyStockPolicy } from '../types';
 
@@ -53,4 +53,3 @@ export function useSafetyStockAuto() {
 }
 
 export default useSafetyStockAuto;
-
